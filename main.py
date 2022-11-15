@@ -29,8 +29,9 @@ def predict(ford_car: FordCar):
     # Create a pandas dataframe and select the features the current model expects
     input_data = pd.DataFrame([[ford_car.year, 
                                 ford_car.fuelType, 
-                                ford_car.engineSize]], 
-                              columns=['year', 'fuelType', 'engineSize'])
+                                ford_car.engineSize,
+                                ford_car.mileage]], 
+                              columns=['year', 'fuelType', 'engineSize', 'mileage'])
     
     prediction = model_rf.predict(input_data)
     
