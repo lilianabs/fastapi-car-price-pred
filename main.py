@@ -2,7 +2,7 @@ import uvicorn
 import joblib
 import pandas as pd
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 app = FastAPI()
 
@@ -20,14 +20,20 @@ def predict(model: str, year: int,
     model_pkl_file = "model/model_rf.pkl"
     model_rf = joblib.load(model_pkl_file)
     
-    # Select the features the current model expects
+    # Create a pandas dataframe and select the features the current model expects
     input_data = pd.DataFrame([[year, fuelType, engineSize]], 
                               columns=['year', 'fuelType', 'engineSize'])
     
     prediction = model_rf.predict(input_data)
     
-    # Round the prediction
-    prediction = round(prediction[0], 3)
+    # Cast the prediction to int
+    prediction = int(prediction[0])
+    
+    # If the prediction is not valid then we raise an error
+    if prediction < 0:
+        raise HTTPException(
+            status_code=400, detail=f"Invalid prediction"
+        )
     
     return {"Car price suggested": prediction}
 
